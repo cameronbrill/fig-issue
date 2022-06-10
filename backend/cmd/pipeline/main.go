@@ -3,57 +3,69 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
+	"regexp"
 
 	"github.com/cameronbrill/fig-issue/listener"
 	"github.com/cameronbrill/fig-issue/pipeline"
+	"github.com/cameronbrill/fig-issue/publisher"
 )
 
 func main() {
-	source := []string{"FOO", "BAR", "BAX", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"}
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	readStream := listener.Producer(ctx, source)
+	figCommentChan := make(chan *listener.FigmaFileCommentResponse)
+	go func() {
+		listener.Start(ctx, figCommentChan)
+	}()
 
-	lowerStage := make(chan string)
+	type comment struct {
+		message  string
+		mentions []string
+	}
+
+	lowerStage := make(chan comment)
 	errorChannel := make(chan error)
 
-	transformA := func(s string) (string, error) {
-		return strings.ToLower(s), nil
-	}
+	transformFigComments := func(s *listener.FigmaFileCommentResponse) (comment, error) {
+		message := ""
+		mentions := []string{}
 
-	go func() {
-		pipeline.Step(ctx, readStream, lowerStage, errorChannel, transformA)
-	}()
-
-	type result struct {
-		v string
-		l int
-	}
-
-	titleStage := make(chan result)
-	transformB := func(s string) (result, error) {
-		if len(s) > 14 {
-			return result{
-				v: s,
-				l: len(s),
-			}, fmt.Errorf("invalid input string: %s", s)
+		for _, c := range s.Comment {
+			if c.Text == "" {
+				continue
+			}
+			message += c.Text + "\n"
+		}
+		isIssue, err := regexp.MatchString("!issue", message)
+		if err != nil {
+			return comment{}, err
+		}
+		if !isIssue {
+			return comment{}, fmt.Errorf("comment is not issue")
 		}
 
-		return result{
-			v: strings.Title(s),
-			l: len(s),
-		}, nil
+		return comment{message: message, mentions: mentions}, nil
 	}
 
 	go func() {
-		pipeline.Step(ctx, lowerStage, titleStage, errorChannel, transformB)
+		pipeline.Step(ctx, figCommentChan, lowerStage, errorChannel, transformFigComments)
 	}()
 
-	err := pipeline.Consumer(ctx, cancel, titleStage, errorChannel)
+	//go func() {
+	//	for {
+	//		fmt.Printf("error: %v\n", <-errorChannel)
+	//	}
+	//}()
+
+	post := func(c comment) error {
+		fmt.Printf("consumed comment: %+#v\n", c)
+		return nil
+	}
+	err := publisher.Consumer(ctx, cancel, lowerStage, post, errorChannel)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	<-ctx.Done()
 }
