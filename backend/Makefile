@@ -1,5 +1,5 @@
-BUILD_DIR=build
-SUB_DIRS=example
+BUILD_DIR=tmp
+SUB_DIRS=pipeline
 BUILD_TARGETS=$(addprefix cmd/,$(SUB_DIRS))
 
 all: deps $(BUILD_TARGETS)
