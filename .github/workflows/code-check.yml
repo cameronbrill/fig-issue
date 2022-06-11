@@ -37,7 +37,7 @@ jobs:
   build:
     strategy:
       matrix:
-        package: [example, pipeline]
+        package: [pipeline]
     name: build go binary
     runs-on: ubuntu-latest
     steps:
