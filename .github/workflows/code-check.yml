@@ -12,19 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: cd backend
       - name: Setup go
         uses: actions/setup-go@v3
         with:
           go-version: 1.18.1
       - name: Format
+        working-directory: ./backend
         run: gofmt -l -d -s .
   lint:
     name: lint go files
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: cd backend
       - name: Setup go
         uses: actions/setup-go@v3
         with:
@@ -32,7 +31,7 @@ jobs:
       - name: Run linter
         uses: golangci/golangci-lint-action@v3
         with:
-          args: --config ./.golangci.yaml
+          args: --config ./backend/.golangci.yaml
           version: latest
   build:
     strategy:
@@ -42,10 +41,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: cd backend
       - name: Setup go
         uses: actions/setup-go@v3
         with:
           go-version: 1.18.1
       - name: Build binary
+        working-directory: ./backend
         run: go build -o ./build/${{ matrix.package }} ./cmd/${{ matrix.package }}
