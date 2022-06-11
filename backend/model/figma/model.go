@@ -1,4 +1,4 @@
-package listener
+package figma
 
 import "encoding/json"
 
