@@ -2,7 +2,8 @@ package pipeline
 
 import (
 	"context"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func Consumer[T any](ctx context.Context, cancelFunc context.CancelFunc, values <-chan T, operation func(T) error, errors <-chan error) error {
@@ -12,7 +13,7 @@ func Consumer[T any](ctx context.Context, cancelFunc context.CancelFunc, values 
 			return ctx.Err()
 		case err, ok := <-errors:
 			if ok {
-				log.Printf("error: %v", err)
+				log.Errorf("error: %v", err)
 				if err.Error() == "comment is not issue" {
 					continue
 				}
@@ -27,7 +28,7 @@ func Consumer[T any](ctx context.Context, cancelFunc context.CancelFunc, values 
 			if err != nil {
 				return err
 			}
-			log.Printf("Consumed: %v", val)
+			log.Tracef("Consumed: %v", val)
 		}
 	}
 }

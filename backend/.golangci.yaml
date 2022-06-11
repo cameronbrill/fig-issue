@@ -40,6 +40,7 @@ linters-settings:
     go: "1.18"
 
   depguard:
+    go: "1.18"
     list-type: blacklist
     include-go-root: true
     packages:

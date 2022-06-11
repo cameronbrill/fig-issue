@@ -2,6 +2,7 @@ package pipeline
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 
 	"golang.org/x/sync/semaphore"
@@ -21,13 +22,12 @@ func Step[In any, Out any](ctx context.Context,
 	for in := range inChan {
 		select {
 		case <-ctx.Done():
-			print("fail")
-			break
+			return
 		default:
 		}
 
 		if err := sem.Acquire(ctx, 1); err != nil {
-			errChan <- err
+			errChan <- fmt.Errorf("acquiring semaphore: %w", err)
 			break
 		}
 
@@ -43,6 +43,6 @@ func Step[In any, Out any](ctx context.Context,
 	}
 
 	if err := sem.Acquire(ctx, int64(limit)); err != nil {
-		print("failed to acquire semaphore: ", err)
+		errChan <- fmt.Errorf("acquiring all semaphores: %w", err)
 	}
 }

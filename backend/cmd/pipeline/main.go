@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"regexp"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/cameronbrill/fig-issue/listener"
 	"github.com/cameronbrill/fig-issue/pipeline"
 )
@@ -52,12 +54,12 @@ func main() {
 	}()
 
 	post := func(c comment) error {
-		fmt.Printf("consumed comment: %+#v\n", c)
+		log.Infof("consumed comment: %+#v", c)
 		return nil
 	}
 	err := pipeline.Consumer(ctx, cancel, lowerStage, post, errorChannel)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 
 	<-ctx.Done()
