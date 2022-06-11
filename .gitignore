@@ -24,3 +24,6 @@ build/**
 
 # tmp build files
 **/tmp
+
+# env files
+**/.env*
