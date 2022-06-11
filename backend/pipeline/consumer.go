@@ -1,4 +1,4 @@
-package publisher
+package pipeline
 
 import (
 	"context"

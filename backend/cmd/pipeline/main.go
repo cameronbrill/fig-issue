@@ -7,7 +7,6 @@ import (
 
 	"github.com/cameronbrill/fig-issue/listener"
 	"github.com/cameronbrill/fig-issue/pipeline"
-	"github.com/cameronbrill/fig-issue/publisher"
 )
 
 func main() {
@@ -52,17 +51,11 @@ func main() {
 		pipeline.Step(ctx, figCommentChan, lowerStage, errorChannel, transformFigComments)
 	}()
 
-	//go func() {
-	//	for {
-	//		fmt.Printf("error: %v\n", <-errorChannel)
-	//	}
-	//}()
-
 	post := func(c comment) error {
 		fmt.Printf("consumed comment: %+#v\n", c)
 		return nil
 	}
-	err := publisher.Consumer(ctx, cancel, lowerStage, post, errorChannel)
+	err := pipeline.Consumer(ctx, cancel, lowerStage, post, errorChannel)
 	if err != nil {
 		fmt.Println(err)
 	}

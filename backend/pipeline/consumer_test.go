@@ -1,4 +1,4 @@
-package publisher
+package pipeline
 
 import (
 	"context"
@@ -12,17 +12,19 @@ func TestConsumer(t *testing.T) {
 
 	errChan := make(chan error)
 	defer close(errChan)
-	err := Consumer(ctx, cancel, inChan, errChan)
+	noop := func(s string) error { return nil }
+	err := Consumer(ctx, cancel, inChan, noop, errChan)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	t.Run("canceled context", func(t *testing.T) {
 		three := Producer(ctx, input)
+
 		ctx, cancel = context.WithCancel(context.Background())
 		cancel()
 
-		err = Consumer(ctx, cancel, three, errChan)
+		err = Consumer(ctx, cancel, three, noop, errChan)
 		if err != context.Canceled {
 			t.Fatal(err)
 		}
