@@ -18,11 +18,11 @@ jobs:
 
       - name: Download latest schema
         uses: suisei-cn/actions-download-file@v1
-        id: tmpschema # Remember to give an ID if you need the output filename
+        id: linearschema
         with:
           url: "https://raw.githubusercontent.com/linear/linear/master/packages/sdk/src/schema.graphql"
           target: ./backend/
 
       - name: schema diff check
         working-directory: ./backend/
-        run: diff ./tmpschema ./publisher/linear/schema.graphql
+        run: diff ${{ steps.linearschema.outputs.filename }} publisher/linear/schema.graphql
