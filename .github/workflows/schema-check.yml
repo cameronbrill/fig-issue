@@ -1,0 +1,28 @@
+name: "Schema Check"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 8 * * *"
+
+jobs:
+  linear:
+    name: Is Linear schema up to date
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download the file
+        uses: suisei-cn/actions-download-file@v1
+        id: tmpschema.graphql # Remember to give an ID if you need the output filename
+        with:
+          url: "https://raw.githubusercontent.com/linear/linear/master/packages/sdk/src/schema.graphql"
+          target: ./backend/
+
+      - name: schema diff check
+        working-directory: ./backend/
+        run: diff tmpschema.graphql publisher/linear/schema.graphql
