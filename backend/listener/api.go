@@ -30,5 +30,8 @@ func Start(ctx context.Context, commentChan chan<- *FigmaFileCommentResponse) {
 		w.WriteHeader(http.StatusOK)
 	})
 	println("starting figma listener on port :3000")
-	http.ListenAndServe(":3000", r)
+	err := http.ListenAndServe(":3000", r)
+	if err != nil {
+		panic(err)
+	}
 }
