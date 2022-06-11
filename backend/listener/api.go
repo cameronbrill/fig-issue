@@ -7,14 +7,15 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
 )
 
-func Start(ctx context.Context, commentChan chan<- *figma.FigmaFileCommentResponse) {
+func Start(ctx context.Context, commentChan chan<- *figma.FigmaFileCommentResponse) *http.Server {
 	r := chi.NewRouter()
+
 	r.Use(middleware.Logger)
+
 	r.Post("/figma", func(w http.ResponseWriter, r *http.Request) {
 		var res *figma.FigmaFileCommentResponse
 		decoder := json.NewDecoder(r.Body)
@@ -32,9 +33,13 @@ func Start(ctx context.Context, commentChan chan<- *figma.FigmaFileCommentRespon
 
 		w.WriteHeader(http.StatusOK)
 	})
-	log.Info("starting figma listener on port :3000")
-	err := http.ListenAndServe(":3000", r)
-	if err != nil {
-		panic(err)
-	}
+
+	svc := &http.Server{Addr: ":3000", Handler: r}
+
+	go func() {
+		<-ctx.Done()
+		svc.Shutdown(context.Background())
+	}()
+
+	return svc
 }

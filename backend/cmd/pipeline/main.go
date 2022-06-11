@@ -3,9 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
 	"regexp"
 
-	"github.com/hasura/go-graphql-client"
+	"github.com/Khan/genqlient/graphql"
+	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/cameronbrill/fig-issue/backend/listener"
@@ -14,6 +17,16 @@ import (
 	"github.com/cameronbrill/fig-issue/backend/pipeline"
 	"github.com/cameronbrill/fig-issue/backend/publisher"
 )
+
+type authedTransport struct {
+	key     string
+	wrapped http.RoundTripper
+}
+
+func (t *authedTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("Authorization", t.key)
+	return t.wrapped.RoundTrip(req)
+}
 
 func transformFigComments(s *figma.FigmaFileCommentResponse) (model.Comment, error) {
 	message := ""
@@ -37,15 +50,23 @@ func transformFigComments(s *figma.FigmaFileCommentResponse) (model.Comment, err
 }
 
 func main() {
+	err := godotenv.Load(".env.local")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %+v", err)
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	figCommentChan := make(chan *figma.FigmaFileCommentResponse)
-	for i := 0; i < 8; i++ {
-		go func() {
-			listener.Start(ctx, figCommentChan)
-		}()
-	}
+	wbhkSvc := listener.Start(ctx, figCommentChan)
+	go func() {
+		log.Info("starting figma listener on port :3000")
+		err := wbhkSvc.ListenAndServe()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	lowerStage := make(chan model.Comment)
 	errorChannel := make(chan error)
@@ -56,8 +77,19 @@ func main() {
 		}()
 	}
 
-	client := graphql.NewClient("https://api.linear.app/graphql")
-	p := publisher.New(client)
+	key := os.Getenv("LINEAR_API_KEY")
+	if key == "" {
+		err := fmt.Errorf("must set LINEAR_API_KEY=<linear token>")
+		panic(err)
+	}
+	httpClient := http.Client{
+		Transport: &authedTransport{
+			key:     key,
+			wrapped: http.DefaultTransport,
+		},
+	}
+	client := graphql.NewClient("https://api.linear.app/graphql", &httpClient)
+	p := publisher.New(&client)
 	pub := func(c model.Comment) error {
 		p.Execute(c)
 		return nil
@@ -69,5 +101,6 @@ func main() {
 		}
 	}
 
+	// TODO: os signal handling
 	<-ctx.Done()
 }

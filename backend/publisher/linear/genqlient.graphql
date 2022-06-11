@@ -1,0 +1,18 @@
+query Teams {
+  teams {
+    nodes {
+      id
+      name
+    }
+  }
+}
+
+mutation IssueCreate($title: String!, $body: String!, $teamId: String!) {
+  issueCreate(input: { title: $title, description: $body, teamId: $teamId }) {
+    success
+    issue {
+      id
+      title
+    }
+  }
+}
