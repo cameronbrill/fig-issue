@@ -25,4 +25,4 @@ jobs:
 
       - name: schema diff check
         working-directory: ./backend/
-        run: diff tmpschema publisher/linear/schema.graphql
+        run: diff ./tmpschema ./publisher/linear/schema.graphql
