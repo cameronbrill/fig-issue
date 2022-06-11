@@ -38,3 +38,12 @@ linters-settings:
   unused:
     # Select the Go version to target. The default is '1.13'.
     go: "1.18"
+
+  depguard:
+    list-type: blacklist
+    include-go-root: true
+    packages:
+      - log
+    packages-with-error-message:
+      # specify an error message to output when a blacklisted package is used
+      - log: "logging is handled by github.com/sirupsen/logrus"
