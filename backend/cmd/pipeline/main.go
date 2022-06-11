@@ -91,7 +91,9 @@ func main() {
 	client := graphql.NewClient("https://api.linear.app/graphql", &httpClient)
 	p := publisher.New(&client)
 	pub := func(c model.Comment) error {
-		p.Execute(c)
+		if err := p.Execute(c); err != nil {
+			return err
+		}
 		return nil
 	}
 	for i := 0; i < 8; i++ {

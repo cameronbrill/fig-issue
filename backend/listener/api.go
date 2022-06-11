@@ -3,6 +3,7 @@ package listener
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -38,7 +39,9 @@ func Start(ctx context.Context, commentChan chan<- *figma.FigmaFileCommentRespon
 
 	go func() {
 		<-ctx.Done()
-		svc.Shutdown(context.Background())
+		if err := svc.Shutdown(context.Background()); err != nil {
+			log.Fatalf("shutting down listener server: %v", err)
+		}
 	}()
 
 	return svc
