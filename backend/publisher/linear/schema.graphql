@@ -964,8 +964,7 @@ type CustomView implements Node {
   """
   The filters applied to issues in the custom view.
   """
-  filters: JSONObject!
-    @deprecated(reason: "Will be replaced by `filterData` in a future update")
+  filters: JSONObject! @deprecated(reason: "Will be replaced by `filterData` in a future update")
   """
   The icon of the custom view.
   """
@@ -2570,10 +2569,7 @@ type Issue implements Node {
   """
   The order of the item in its column on the board.
   """
-  boardOrder: Float!
-    @deprecated(
-      reason: "Will be removed in near future, please use `sortOrder` instead"
-    )
+  boardOrder: Float! @deprecated(reason: "Will be removed in near future, please use `sortOrder` instead")
   """
   Suggested branch name for the issue.
   """
@@ -3627,10 +3623,7 @@ type IssueLabel implements Node {
   The label's name.
   """
   name: String!
-  organization: Organization
-    @deprecated(
-      reason: "Workspace labels are identified by their team being null."
-    )
+  organization: Organization @deprecated(reason: "Workspace labels are identified by their team being null.")
   """
   The team that the label is associated with. If null, the label is associated with the global workspace..
   """
@@ -4394,10 +4387,7 @@ type Mutation {
     The identifier of the attachment to archive.
     """
     id: String!
-  ): ArchivePayload!
-    @deprecated(
-      reason: "This mutation is deprecated, please use `attachmentDelete` instead"
-    )
+  ): ArchivePayload! @deprecated(reason: "This mutation is deprecated, please use `attachmentDelete` instead")
   """
   [Alpha] Creates a new attachment, or updates existing if the same `url` and `issueId` is used.
   """
@@ -4531,9 +4521,7 @@ type Mutation {
   """
   Update collaborative document with client steps.
   """
-  collaborativeDocumentUpdate(
-    input: CollaborationDocumentUpdateInput!
-  ): CollaborationDocumentUpdatePayload!
+  collaborativeDocumentUpdate(input: CollaborationDocumentUpdateInput!): CollaborationDocumentUpdatePayload!
   """
   Creates a new comment.
   """
@@ -4577,9 +4565,7 @@ type Mutation {
   """
   Create CSV export report for the organization.
   """
-  createCsvExportReport(
-    includePrivateTeamIds: [String!]
-  ): CreateCsvExportReportPayload!
+  createCsvExportReport(includePrivateTeamIds: [String!]): CreateCsvExportReportPayload!
   """
   Creates an organization from onboarding.
   """
@@ -4962,9 +4948,7 @@ type Mutation {
     """
     input: IntercomSettingsInput!
   ): IntegrationPayload!
-    @deprecated(
-      reason: "This mutation is deprecated, please use `integrationSettingsUpdate` instead"
-    )
+    @deprecated(reason: "This mutation is deprecated, please use `integrationSettingsUpdate` instead")
   """
   Enables Loom integration for the organization.
   """
@@ -5329,8 +5313,7 @@ type Mutation {
     The identifier of the label to archive.
     """
     id: String!
-  ): ArchivePayload!
-    @deprecated(reason: "Labels are deleted instead of archived.")
+  ): ArchivePayload! @deprecated(reason: "Labels are deleted instead of archived.")
   """
   Creates a new label.
   """
@@ -5710,8 +5693,7 @@ type Mutation {
     The identifier of the project to archive. Also the identifier from the URL is accepted.
     """
     id: String!
-  ): ArchivePayload!
-    @deprecated(reason: "Deprecated in favor of projectDelete.")
+  ): ArchivePayload! @deprecated(reason: "Deprecated in favor of projectDelete.")
   """
   Creates a new project.
   """
@@ -10373,8 +10355,7 @@ type Team implements Node {
   """
   The id of the default template to use for new issues created by members of the team.
   """
-  defaultTemplateForMembersId: String
-    @deprecated(reason: "Use defaultTemplateForMembers instead")
+  defaultTemplateForMembersId: String @deprecated(reason: "Use defaultTemplateForMembers instead")
   """
   The default template to use for new issues created by non-members of the team.
   """
@@ -10382,8 +10363,7 @@ type Team implements Node {
   """
   The id of the default template to use for new issues created by non-members of the team.
   """
-  defaultTemplateForNonMembersId: String
-    @deprecated(reason: "Use defaultTemplateForNonMembers instead")
+  defaultTemplateForNonMembersId: String @deprecated(reason: "Use defaultTemplateForNonMembers instead")
   """
   The team's description.
   """
