@@ -1,4 +1,4 @@
-module github.com/cameronbrill/fig-issue
+module github.com/cameronbrill/fig-issue/backend
 
 go 1.18
 

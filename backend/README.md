@@ -1,5 +1,5 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/cameronbrill/fig-issue)](https://goreportcard.com/report/github.com/cameronbrill/fig-issue)
-[![GoDoc](https://godoc.org/github.com/cameronbrill/fig-issue?status.svg)](https://godoc.org/github.com/cameronbrill/fig-issue)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cameronbrill/fig-issue/backend)](https://goreportcard.com/report/github.com/cameronbrill/fig-issue/backend)
+[![GoDoc](https://godoc.org/github.com/cameronbrill/fig-issue/backend?status.svg)](https://godoc.org/github.com/cameronbrill/fig-issue/backend)
 
 # fig issue
 

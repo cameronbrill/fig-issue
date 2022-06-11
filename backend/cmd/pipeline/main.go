@@ -7,8 +7,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/cameronbrill/fig-issue/listener"
-	"github.com/cameronbrill/fig-issue/pipeline"
+	"github.com/cameronbrill/fig-issue/backend/listener"
+	"github.com/cameronbrill/fig-issue/backend/pipeline"
 )
 
 func main() {

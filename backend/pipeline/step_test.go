@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	test "github.com/cameronbrill/fig-issue/test"
+	test "github.com/cameronbrill/fig-issue/backend/test"
 )
 
 type stepTest[T any, U comparable] struct {
