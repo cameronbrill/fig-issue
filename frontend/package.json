@@ -1,0 +1,28 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "s": "concurrently \"yarn dev\" \"yarn styles\"",
+    "styles": "tcm -p 'styles/**/*.css' --watch",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "12.1.6",
+    "react": "18.1.0",
+    "react-dom": "18.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.42",
+    "@types/react": "18.0.12",
+    "@types/react-dom": "18.0.5",
+    "concurrently": "^7.2.1",
+    "eslint": "8.17.0",
+    "eslint-config-next": "12.1.6",
+    "typed-css-modules": "^0.7.2",
+    "typescript": "4.7.3"
+  }
+}
