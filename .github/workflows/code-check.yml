@@ -101,7 +101,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Run tests
-        run: go test -v -covermode=count
+        run: go test -v ./... -covermode=atomic
       - name: Update code coverage
         uses: codecov/codecov-action@v2
         with:
