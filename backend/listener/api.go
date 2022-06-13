@@ -3,11 +3,13 @@ package listener
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
 )
@@ -15,12 +17,18 @@ import (
 func Start(ctx context.Context, commentChan chan<- *figma.FigmaFileCommentResponse) *http.Server {
 	r := chi.NewRouter()
 
-	r.Use(middleware.Logger)
+	if os.Getenv("APP_ENV") == "dev" || os.Getenv("APP_ENV") == "prod" {
+		r.Use(middleware.Logger)
+	}
 
 	r.Post("/figma", func(w http.ResponseWriter, r *http.Request) {
-		var res *figma.FigmaFileCommentResponse
-		decoder := json.NewDecoder(r.Body)
-		err := decoder.Decode(&res)
+		var res figma.FigmaFileCommentResponse
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		err = json.Unmarshal(body, &res)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -28,9 +36,10 @@ func Start(ctx context.Context, commentChan chan<- *figma.FigmaFileCommentRespon
 
 		if res.Passcode != "secretpasscode" {
 			http.Error(w, "Invalid passcode", http.StatusUnauthorized)
+			return
 		}
 
-		commentChan <- res
+		commentChan <- &res
 
 		w.WriteHeader(http.StatusOK)
 	})
