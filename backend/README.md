@@ -19,3 +19,7 @@ Register on our app; this allows us to register a webhook with your Figma org an
 
 - [ ] Add oauth
 - [ ] allow extension to other ticket operators (jira, clickup, trello, etc)
+
+## disclaimers
+
+fig issue is not affiliated with Figma. fig issue is simply compatible with Figma. fig issue is not affiliated with Linear.
