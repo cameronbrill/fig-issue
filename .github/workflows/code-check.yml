@@ -90,3 +90,20 @@ jobs:
       - name: Build binary
         working-directory: ./backend
         run: go build -o ./build/${{ matrix.package }} ./cmd/${{ matrix.package }}
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        if: success()
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18.1
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run tests
+        run: go test -v -covermode=count
+      - name: Update code coverage
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
+          verbose: true
