@@ -2,4 +2,4 @@
 
 mwahahahahah
 
-i love cam <3
+i luv cam <3
