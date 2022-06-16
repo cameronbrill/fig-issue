@@ -2,7 +2,6 @@ import { Auth } from "@supabase/ui";
 import { Props as AuthProps } from "@supabase/ui/dist/cjs/components/Auth/Auth";
 import Head from "next/head";
 import React, { ReactNode, useEffect, useState } from "react";
-import useSWR from "swr";
 import { supabase } from "../../lib/supabase/client";
 import { useAuthContext } from "../Auth/UserContext";
 
