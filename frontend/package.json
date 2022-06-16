@@ -13,6 +13,8 @@
   "dependencies": {
     "@highlight-run/react": "^1.1.11",
     "highlight.run": "^4.2.7",
+    "@supabase/supabase-js": "^1.35.3",
+    "@supabase/ui": "^0.36.5",
     "next": "12.1.6",
     "react": "18.1.0",
     "react-dom": "18.1.0"
