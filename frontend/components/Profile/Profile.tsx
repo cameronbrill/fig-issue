@@ -10,7 +10,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 
   useMemo(() => {
     const p: any[] = [];
-    Object.entries(user).forEach((key, val) => {
+    Object.entries(user ?? {}).forEach((key, val) => {
       p.push(<div>{`${key}: ${val}`}</div>);
       setUserArr(p);
     });
