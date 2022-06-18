@@ -13,7 +13,7 @@ Register on our app; this allows us to register a webhook with your Figma org an
 
 ### immediate term
 
-- [ ] create base etl pipeline (figma -> fig-issue -> linear)
+- [x] create base etl pipeline (figma -> fig-issue -> linear)
 
 ### long term
 
