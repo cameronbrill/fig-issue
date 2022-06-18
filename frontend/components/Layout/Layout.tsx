@@ -1,6 +1,7 @@
 import { Auth } from "@supabase/ui";
 import { Props as AuthProps } from "@supabase/ui/dist/cjs/components/Auth/Auth";
 import Head from "next/head";
+import Link from "next/link";
 import React, { ReactNode, useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase/client";
 import { useAuthContext } from "../Auth/UserContext";
@@ -38,7 +39,34 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Head>
         <title>Fig Issue</title>
       </Head>
-      <header></header>
+      <header
+        style={{
+          display: "flex",
+          marginRight: "5vw",
+          marginLeft: "5vw",
+          marginTop: "5vh",
+        }}
+      >
+        <h1
+          style={{
+            minWidth: "fit-content",
+            padding: "10px",
+          }}
+        >
+          Fig Issue
+        </h1>
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "left",
+            alignItems: "center",
+          }}
+        >
+          <Link href="/">home</Link>
+          <Link href="/me">me</Link>
+        </div>
+      </header>
       <main>
         {(user && children) || (
           <Auth
@@ -50,7 +78,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           />
         )}
       </main>
-      <footer></footer>
+      <footer>Cameron and Nico</footer>
     </div>
   );
 };
