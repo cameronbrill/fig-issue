@@ -9,13 +9,6 @@ type LayoutProps = {
   children: ReactNode;
 };
 
-const fetcher = (url: string, token: string) =>
-  fetch(url, {
-    method: "GET",
-    headers: new Headers({ "Content-Type": "application/json", token }),
-    credentials: "same-origin",
-  }).then((res) => res.json());
-
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [authView, setAuthView] = useState<AuthProps["view"]>("sign_in");
   const { user } = useAuthContext();
@@ -39,7 +32,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return () => {
       authListener?.unsubscribe();
     };
-  }, []);
+  }, [setAuthView]);
   return (
     <div>
       <Head>
