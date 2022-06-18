@@ -1,4 +1,4 @@
-name: "Schema Check"
+name: "Linear Schema Check"
 
 on:
   push:
