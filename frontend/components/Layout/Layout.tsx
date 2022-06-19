@@ -1,39 +1,12 @@
-import { Auth } from "@supabase/ui";
-import { Props as AuthProps } from "@supabase/ui/dist/cjs/components/Auth/Auth";
 import Head from "next/head";
 import Link from "next/link";
-import React, { ReactNode, useEffect, useState } from "react";
-import { supabase } from "../../lib/supabase/client";
-import { useAuthContext } from "../Auth/UserContext";
+import React, { ReactNode } from "react";
 
 type LayoutProps = {
   children: ReactNode;
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [authView, setAuthView] = useState<AuthProps["view"]>("sign_in");
-  const { user } = useAuthContext();
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === "PASSWORD_RECOVERY") setAuthView("update_password");
-        if (event === "USER_UPDATED")
-          setTimeout(() => setAuthView("sign_in"), 1000);
-        // Send session to /api/auth route to set the auth cookie.
-        // NOTE: this is only needed if you're doing SSR (getServerSideProps)!
-        fetch("/api/auth", {
-          method: "POST",
-          headers: new Headers({ "Content-Type": "application/json" }),
-          credentials: "same-origin",
-          body: JSON.stringify({ event, session }),
-        }).then((res) => res.json());
-      }
-    );
-
-    return () => {
-      authListener?.unsubscribe();
-    };
-  }, [setAuthView]);
   return (
     <div>
       <Head>
@@ -44,7 +17,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           display: "flex",
           marginRight: "5vw",
           marginLeft: "5vw",
-          marginTop: "5vh",
+          marginTop: "1vh",
+          height: "5vh",
+          position: "fixed",
         }}
       >
         <h1
@@ -67,18 +42,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Link href="/me">me</Link>
         </div>
       </header>
-      <main>
-        {(user && children) || (
-          <Auth
-            supabaseClient={supabase}
-            providers={["google"]}
-            view={authView}
-            socialLayout="horizontal"
-            socialButtonSize="xlarge"
-          />
-        )}
-      </main>
-      <footer>Cameron and Nico</footer>
+      <div
+        style={{
+          overflowY: "scroll",
+        }}
+      >
+        <main>{children}</main>
+        <footer
+          style={{
+            height: "5vh",
+          }}
+        >
+          Cameron and Nico
+        </footer>
+      </div>
     </div>
   );
 };

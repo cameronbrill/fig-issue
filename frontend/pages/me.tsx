@@ -1,9 +1,13 @@
 import { NextPage } from "next/types";
 import Profile from "../components/Profile/Profile";
-import { useAuthContext } from "../components/Auth/UserContext";
+import { withPageAuth } from "@supabase/supabase-auth-helpers/nextjs";
+import { User } from "../types/user";
 
-const Me: NextPage = () => {
-  const { user } = useAuthContext();
+type MeProps = {
+  user: User;
+};
+
+const Me: NextPage<MeProps> = ({ user }) => {
   return (
     <section>
       <div style={{ maxWidth: "420px", margin: "96px auto" }}>
@@ -14,3 +18,5 @@ const Me: NextPage = () => {
 };
 
 export default Me;
+
+export const getServerSideProps = withPageAuth({ redirectTo: "/login" });
