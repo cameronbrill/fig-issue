@@ -1,0 +1,10 @@
+{
+  "*.{ts,tsx}": [
+    "yarn lint:es",
+    "yarn format"
+  ],
+  "*.css": [
+    "yarn lint:css",
+    "yarn format"
+  ]
+}
