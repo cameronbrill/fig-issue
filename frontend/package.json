@@ -11,7 +11,8 @@
     "lint": "yarn format && yarn lint:es && yarn lint:css",
     "format": "prettier --check --write 'src/**/*.{ts,tsx,css}'",
     "lint:es": "next lint",
-    "lint:css": "stylelint \"**/*.css\""
+    "lint:css": "stylelint \"**/*.css\"",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@highlight-run/react": "^1.1.11",
@@ -33,6 +34,7 @@
     "concurrently": "^7.2.1",
     "eslint": "8.17.0",
     "eslint-config-next": "12.1.6",
+    "husky": "^8.0.1",
     "prettier": "^2.7.1",
     "stylelint": "^14.9.1",
     "stylelint-config-prettier": "^9.0.3",
