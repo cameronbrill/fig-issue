@@ -1,17 +1,10 @@
 .container {
   position: relative;
-  min-height: 100vh;
+  height: 96vh;
   overflow-y: scroll;
 }
 
 .main {
-  min-height: 91vh;
+  min-height: 90vh;
   padding-bottom: 5vh;
-}
-
-.footer {
-  height: 5vh;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
 }
