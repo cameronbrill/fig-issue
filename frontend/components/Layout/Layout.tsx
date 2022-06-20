@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { Footer } from "./Footer";
 import { Header } from "./Header";
 
 import styles from "./Layout.module.css";
@@ -8,17 +9,16 @@ type LayoutProps = {
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const links = [
+    { link: "/", label: "Home" },
+    { link: "/me", label: "Profile" },
+  ];
   return (
     <>
+      <Header links={links} />
       <div className={styles.container}>
-        <Header
-          links={[
-            { link: "/", label: "Home" },
-            { link: "/me", label: "Profile" },
-          ]}
-        />
         <main className={styles.main}>{children}</main>
-        <footer className={styles.footer}>Cameron and Nico</footer>
+        <Footer links={links} />
       </div>
     </>
   );
