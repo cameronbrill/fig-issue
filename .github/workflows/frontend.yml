@@ -31,4 +31,8 @@ jobs:
       - name: Runs linting
         run: cd frontend && yarn lint
       - name: Build Bundle
-        run: cd frontend && CI=false yarn build
+        env:
+          CI: false
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        run: cd frontend && yarn build
