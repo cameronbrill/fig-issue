@@ -10,7 +10,7 @@ type MeProps = {
 const Me: NextPage<MeProps> = ({ user }) => {
   return (
     <section>
-      <div style={{ maxWidth: "420px", margin: "96px auto" }}>
+      <div style={{ maxWidth: "420px" }}>
         <Profile user={user} />
       </div>
     </section>
