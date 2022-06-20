@@ -8,7 +8,6 @@ import (
 	"regexp"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/cameronbrill/fig-issue/backend/listener"
@@ -50,11 +49,6 @@ func transformFigComments(s *figma.FigmaFileCommentResponse) (model.Comment, err
 }
 
 func main() {
-	err := godotenv.Load(".env.local")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %+v", err)
-	}
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
