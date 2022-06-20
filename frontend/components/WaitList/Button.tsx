@@ -23,7 +23,7 @@ export const WaitListButton: React.FC<WaitListButtonProps> = ({
 
   return (
     <Link
-      href="mailto:figissue@camreronbrill.me?cc=nicolas3104@gmail.com&subject=Fig%20Issue%20Early%20Access%20Request&body=Hi Cameron,%0A%0A {replace with desired use-case/any questions} %0A%0A I would like early access to Fig Issue!%0A%0A Thanks!"
+      href="mailto:figissue@camreronbrill.me&subject=Fig%20Issue%20Early%20Access%20Request&body=Hi Cameron,%0A%0A {replace with desired use-case/any questions} %0A%0A I would like early access to Fig Issue!%0A%0A Thanks!"
       passHref
     >
       {button}
