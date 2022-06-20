@@ -18,8 +18,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Header links={links} />
       <div className={styles.container}>
         <main className={styles.main}>{children}</main>
-        <Footer links={links} />
       </div>
+      <Footer links={links} />
     </>
   );
 };
