@@ -1,6 +1,8 @@
 import React, { ReactNode } from "react";
 import { Header } from "./Header";
 
+import styles from "./Layout.module.css";
+
 type LayoutProps = {
   children: ReactNode;
 };
@@ -8,32 +10,15 @@ type LayoutProps = {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
-      <div
-        style={{
-          position: "relative",
-          minHeight: "91vh",
-          overflowY: "scroll",
-        }}
-      >
+      <div className={styles.container}>
         <Header
           links={[
             { link: "/", label: "Home" },
             { link: "/me", label: "Profile" },
           ]}
         />
-        <main style={{ paddingBottom: "5vh", minHeight: "91vh" }}>
-          {children}
-        </main>
-        <footer
-          style={{
-            height: "5vh",
-            position: "absolute",
-            bottom: "0",
-            width: "100%",
-          }}
-        >
-          Cameron and Nico
-        </footer>
+        <main className={styles.main}>{children}</main>
+        <footer className={styles.footer}>Cameron and Nico</footer>
       </div>
     </>
   );
