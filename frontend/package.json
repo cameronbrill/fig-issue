@@ -12,7 +12,7 @@
     "format": "prettier --check --write 'src/**/*.{ts,tsx,css}'",
     "lint:es": "next lint",
     "lint:css": "stylelint \"**/*.css\"",
-    "prepare": "husky install"
+    "prepare": "cd .. && husky install"
   },
   "dependencies": {
     "@highlight-run/react": "^1.1.11",
@@ -35,6 +35,7 @@
     "eslint": "8.17.0",
     "eslint-config-next": "12.1.6",
     "husky": "^8.0.1",
+    "lint-staged": "^13.0.2",
     "prettier": "^2.7.1",
     "stylelint": "^14.9.1",
     "stylelint-config-prettier": "^9.0.3",
