@@ -23,3 +23,15 @@ Register on our app; this allows us to register a webhook with your Figma org an
 ## disclaimers
 
 fig issue is not affiliated with Figma. fig issue is simply compatible with Figma. fig issue is not affiliated with Linear.
+
+## thanks
+
+this project uses a lot of open source software. big thanks to the following teams and people for providing them:
+
+- the [mantine team](https://github.com/mantinedev/mantine) for our ui frameworks
+  - [rtivital](https://github.com/rtivital) for making lots of example components we use
+- [vercel](https://vercel.com) for nextjs and vercel
+- [supabase](https://supabase.com) for open source auth
+- [Khan Academy](https://github.com/Khan/genqclient) for a modern graphql client for Go
+- [Siruspen](github.com/sirupsen/logrus) for structured logging in Go
+- [Go Chi](github.com/go-chi/chi) for backend api router
