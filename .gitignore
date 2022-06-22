@@ -27,3 +27,6 @@ build/**
 
 # env files
 **/.env*
+
+# test coverage files
+**/*coverage*
