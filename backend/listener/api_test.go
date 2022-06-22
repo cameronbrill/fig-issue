@@ -71,6 +71,18 @@ func TestWebhook(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "test invalid invalid passcode",
+			expectedStatus: http.StatusUnauthorized,
+			validRequest:   true,
+			body:           nil,
+		},
+		{
+			name:           "test invalid io.ReadCloser provided to request",
+			expectedStatus: http.StatusBadRequest,
+			validRequest:   false,
+			body:           nil,
+		},
 	}
 
 	for _, tc := range tests {
