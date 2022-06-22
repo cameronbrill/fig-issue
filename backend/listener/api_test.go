@@ -2,23 +2,28 @@ package listener
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
+	"github.com/cameronbrill/fig-issue/backend/test"
 )
 
 func TestWebhook(t *testing.T) {
 	tests := []struct {
-		name string
-		body figma.FileCommentResponse
+		name           string
+		body           *figma.FileCommentResponse
+		expectedStatus int
+		validRequest   bool
 	}{
 		{
-			name: "test valid",
-			body: figma.FileCommentResponse{
+			name:           "test valid",
+			expectedStatus: http.StatusOK,
+			validRequest:   true,
+			body: &figma.FileCommentResponse{
 				Response: figma.Response{
 					EventType: "FILE_COMMENT",
 					Passcode:  "secretpasscode",
@@ -71,20 +76,30 @@ func TestWebhook(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			commentChan := make(chan *figma.FileCommentResponse, 8)
-			server := Start(context.Background(), commentChan)
+			wbhkSvc := &webhookSvc{commentChan}
+
+			var body io.Reader
+			if tc.validRequest {
+				var buf bytes.Buffer
+				err := json.NewEncoder(&buf).Encode(tc.body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				body = &buf
+			} else {
+				body = test.ErrReader(0)
+			}
+			req := httptest.NewRequest(http.MethodPost, "/figma", body)
 			w := httptest.NewRecorder()
 
-			var buf bytes.Buffer
-			err := json.NewEncoder(&buf).Encode(&tc.body)
-			if err != nil {
-				t.Fatal(err)
+			wbhkSvc.figmaHandler(w, req)
+
+			res := w.Result()
+			defer res.Body.Close()
+
+			if res.StatusCode != tc.expectedStatus {
+				t.Errorf("expected status %d, got %d", tc.expectedStatus, res.StatusCode)
 			}
-			r, err := http.NewRequest("POST", "/figma", &buf)
-			if err != nil {
-				t.Fatal(err)
-			}
-			r.Header.Set("Content-Type", "application/json")
-			server.Handler.ServeHTTP(w, r)
 		})
 	}
 }
