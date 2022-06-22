@@ -21,28 +21,9 @@ func Start(ctx context.Context, commentChan chan<- *figma.FileCommentResponse) *
 		r.Use(middleware.Logger)
 	}
 
-	r.Post("/figma", func(w http.ResponseWriter, r *http.Request) {
-		var res figma.FileCommentResponse
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		err = json.Unmarshal(body, &res)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+	wbhkSvc := &webhookSvc{commentChan}
 
-		if res.Passcode != "secretpasscode" {
-			http.Error(w, "Invalid passcode", http.StatusUnauthorized)
-			return
-		}
-
-		commentChan <- &res
-
-		w.WriteHeader(http.StatusOK)
-	})
+	r.Post("/figma", wbhkSvc.figmaHandler)
 
 	svc := &http.Server{Addr: ":3000", Handler: r}
 
@@ -54,4 +35,31 @@ func Start(ctx context.Context, commentChan chan<- *figma.FileCommentResponse) *
 	}()
 
 	return svc
+}
+
+type webhookSvc struct {
+	commentChan chan<- *figma.FileCommentResponse
+}
+
+func (svc *webhookSvc) figmaHandler(w http.ResponseWriter, r *http.Request) {
+	var res figma.FileCommentResponse
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if res.Passcode != "secretpasscode" {
+		http.Error(w, "Invalid passcode", http.StatusUnauthorized)
+		return
+	}
+
+	svc.commentChan <- &res
+
+	w.WriteHeader(http.StatusOK)
 }
