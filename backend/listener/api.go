@@ -3,12 +3,14 @@ package listener
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-playground/validator/v10"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
@@ -21,7 +23,9 @@ func Start(ctx context.Context, commentChan chan<- *figma.FileCommentResponse) *
 		r.Use(middleware.Logger)
 	}
 
-	wbhkSvc := &webhookSvc{commentChan}
+	validate := validator.New()
+
+	wbhkSvc := &webhookSvc{commentChan, validate}
 
 	r.Post("/figma", wbhkSvc.figmaHandler)
 
@@ -39,6 +43,7 @@ func Start(ctx context.Context, commentChan chan<- *figma.FileCommentResponse) *
 
 type webhookSvc struct {
 	commentChan chan<- *figma.FileCommentResponse
+	validate    *validator.Validate
 }
 
 func (svc *webhookSvc) figmaHandler(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +56,12 @@ func (svc *webhookSvc) figmaHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = svc.validate.Struct(res)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid request body: %v", err), 400)
 		return
 	}
 
