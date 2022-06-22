@@ -14,7 +14,7 @@ import (
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
 )
 
-func Start(ctx context.Context, commentChan chan<- *figma.FigmaFileCommentResponse) *http.Server {
+func Start(ctx context.Context, commentChan chan<- *figma.FileCommentResponse) *http.Server {
 	r := chi.NewRouter()
 
 	if os.Getenv("APP_ENV") == "dev" || os.Getenv("APP_ENV") == "prod" {
@@ -22,7 +22,7 @@ func Start(ctx context.Context, commentChan chan<- *figma.FigmaFileCommentRespon
 	}
 
 	r.Post("/figma", func(w http.ResponseWriter, r *http.Request) {
-		var res figma.FigmaFileCommentResponse
+		var res figma.FileCommentResponse
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)

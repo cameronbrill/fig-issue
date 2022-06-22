@@ -27,7 +27,7 @@ func (t *authedTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return t.wrapped.RoundTrip(req)
 }
 
-func transformFigComments(s *figma.FigmaFileCommentResponse) (model.Comment, error) {
+func transformFigComments(s *figma.FileCommentResponse) (model.Comment, error) {
 	message := ""
 	mentions := []string{}
 
@@ -52,7 +52,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	figCommentChan := make(chan *figma.FigmaFileCommentResponse)
+	figCommentChan := make(chan *figma.FileCommentResponse)
 	wbhkSvc := listener.Start(ctx, figCommentChan)
 	go func() {
 		log.Info("starting figma listener on port :3000")
