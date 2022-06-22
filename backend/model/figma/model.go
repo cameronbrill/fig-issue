@@ -14,10 +14,10 @@ type WebhookPostRequest struct {
 }
 
 type Response struct {
-	EventType WebhookV2Event `json:"event_type"`
-	Passcode  string         `json:"passcode"`
-	Timestamp string         `json:"timestamp"`
-	WebhookID json.Number    `json:"webhook_id"`
+	EventType WebhookV2Event `json:"event_type" validate:"required"`
+	Passcode  string         `json:"passcode" validate:"required"`
+	Timestamp string         `json:"timestamp" validate:"required"`
+	WebhookID json.Number    `json:"webhook_id" validate:"required"`
 }
 
 type PingResponse struct {
