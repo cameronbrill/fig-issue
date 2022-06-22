@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
@@ -14,15 +15,17 @@ import (
 
 func TestWebhook(t *testing.T) {
 	tests := []struct {
-		name           string
-		body           *figma.FileCommentResponse
-		expectedStatus int
-		validRequest   bool
+		name               string
+		body               *figma.FileCommentResponse
+		bodyStr            string
+		expectedStatusCode int
+		expectedStatus     string
+		validRequest       bool
 	}{
 		{
-			name:           "test valid",
-			expectedStatus: http.StatusOK,
-			validRequest:   true,
+			name:               "test valid",
+			expectedStatusCode: http.StatusOK,
+			validRequest:       true,
 			body: &figma.FileCommentResponse{
 				Response: figma.Response{
 					EventType: "FILE_COMMENT",
@@ -72,16 +75,31 @@ func TestWebhook(t *testing.T) {
 			},
 		},
 		{
-			name:           "test invalid invalid passcode",
-			expectedStatus: http.StatusUnauthorized,
-			validRequest:   true,
-			body:           nil,
+			name:               "test invalid invalid passcode",
+			expectedStatusCode: http.StatusUnauthorized,
+			expectedStatus:     "Invalid passcode",
+			validRequest:       true,
+			body: &figma.FileCommentResponse{
+				Response: figma.Response{
+					EventType: "FILE_COMMENT",
+					Passcode:  "invalidpasscode",
+					Timestamp: "2020-02-23T20:27:16Z",
+					WebhookID: "22",
+				},
+			},
 		},
 		{
-			name:           "test invalid io.ReadCloser provided to request",
-			expectedStatus: http.StatusBadRequest,
-			validRequest:   false,
-			body:           nil,
+			name:               "test invalid io.ReadCloser provided to request",
+			expectedStatusCode: http.StatusBadRequest,
+			validRequest:       false,
+			body:               nil,
+		},
+		{
+			name:               "test invalid request body",
+			expectedStatus:     "Invalid request body",
+			expectedStatusCode: http.StatusBadRequest,
+			validRequest:       true,
+			bodyStr:            `{"comment": 4}`,
 		},
 	}
 
@@ -92,8 +110,12 @@ func TestWebhook(t *testing.T) {
 
 			var body io.Reader
 			if tc.validRequest {
+				var reqBody any = tc.body
+				if tc.bodyStr != "" {
+					reqBody = bytes.NewBufferString(tc.bodyStr)
+				}
 				var buf bytes.Buffer
-				err := json.NewEncoder(&buf).Encode(tc.body)
+				err := json.NewEncoder(&buf).Encode(reqBody)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -109,8 +131,14 @@ func TestWebhook(t *testing.T) {
 			res := w.Result()
 			defer res.Body.Close()
 
-			if res.StatusCode != tc.expectedStatus {
-				t.Errorf("expected status %d, got %d", tc.expectedStatus, res.StatusCode)
+			if res.StatusCode != tc.expectedStatusCode {
+				t.Errorf("expected status code %d, got %d", tc.expectedStatusCode, res.StatusCode)
+			}
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(res.Body)
+			bodyStr := buf.String()
+			if len(tc.expectedStatus) > 0 && !strings.Contains(bodyStr, tc.expectedStatus) {
+				t.Errorf("expected status %s, got %s", tc.expectedStatus, bodyStr)
 			}
 		})
 	}
