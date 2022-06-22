@@ -11,6 +11,7 @@ import (
 
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
 	"github.com/cameronbrill/fig-issue/backend/test"
+	"github.com/go-playground/validator/v10"
 )
 
 func TestWebhook(t *testing.T) {
@@ -103,10 +104,12 @@ func TestWebhook(t *testing.T) {
 		},
 	}
 
+	validate := validator.New()
+
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			commentChan := make(chan *figma.FileCommentResponse, 8)
-			wbhkSvc := &webhookSvc{commentChan}
+			wbhkSvc := &webhookSvc{commentChan, validate}
 
 			var body io.Reader
 			if tc.validRequest {
