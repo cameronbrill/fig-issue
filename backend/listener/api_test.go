@@ -138,7 +138,10 @@ func TestWebhook(t *testing.T) {
 				t.Errorf("expected status code %d, got %d", tc.expectedStatusCode, res.StatusCode)
 			}
 			buf := new(bytes.Buffer)
-			buf.ReadFrom(res.Body)
+			_, err := buf.ReadFrom(res.Body)
+			if err != nil {
+				t.Fatal(err)
+			}
 			bodyStr := buf.String()
 			if len(tc.expectedStatus) > 0 && !strings.Contains(bodyStr, tc.expectedStatus) {
 				t.Errorf("expected status %s, got %s", tc.expectedStatus, bodyStr)
