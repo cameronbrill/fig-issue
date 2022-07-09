@@ -9,6 +9,8 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	"github.com/cameronbrill/fig-issue/backend/listener"
 	"github.com/cameronbrill/fig-issue/backend/model"
@@ -51,6 +53,16 @@ func transformFigComments(s *figma.FileCommentResponse) (model.Comment, error) {
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	db, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_DSN")), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.AutoMigrate(model.Tables...)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	figCommentChan := make(chan *figma.FileCommentResponse)
 	wbhkSvc := listener.Start(ctx, figCommentChan)
