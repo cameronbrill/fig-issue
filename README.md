@@ -1,5 +1,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/cameronbrill/fig-issue/backend)](https://goreportcard.com/report/github.com/cameronbrill/fig-issue/backend)
 [![GoDoc](https://godoc.org/github.com/cameronbrill/fig-issue/backend?status.svg)](https://godoc.org/github.com/cameronbrill/fig-issue/backend)
+[![codecov](https://codecov.io/gh/cameronbrill/fig-issue/branch/main/graph/badge.svg?token=8BPS2C1705)](https://codecov.io/gh/cameronbrill/fig-issue)
 
 # fig issue
 
