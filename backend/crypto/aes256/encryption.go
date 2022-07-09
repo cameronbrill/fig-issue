@@ -17,8 +17,7 @@ type EncryptionStore struct {
 	CipherText []byte `json:"cipher_text"`
 }
 
-// Encrypt usage:
-// Encrypt(uuid): stored key
+// Encrypt uses an encryption key from the callers environment to encrypt content
 func (e *EncryptionStore) Encrypt(content []byte) (err error) {
 	var encryptionKey []byte = []byte(os.Getenv("AES_ENCRYPTION_KEY"))
 	bPlaintext := _PKCS5Padding(content, aes.BlockSize)
@@ -36,6 +35,9 @@ func (e *EncryptionStore) Encrypt(content []byte) (err error) {
 	return err
 }
 
+// Decrypt uses an encryption key from the callers environment
+// alongside previously stored initialization vector and encrypted cipher text
+// to decrypt content
 func (e *EncryptionStore) Decrypt() (decryptedContent []byte, err error) {
 	var encryptionKey []byte = []byte(os.Getenv("AES_ENCRYPTION_KEY"))
 	block, err := aes.NewCipher(encryptionKey)
