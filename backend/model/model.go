@@ -11,4 +11,8 @@ type Model struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// TODO: list of structs that should be tables for auto migrations
+var Tables = []interface{}{
+	&User{},
+	&Project{},
+	&Comment{},
+}
