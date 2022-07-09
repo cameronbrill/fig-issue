@@ -35,3 +35,14 @@ type Comment struct {
 	Message  string
 	Mentions []string
 }
+
+type User struct {
+	Model
+	SupaBaseUID UID `json:"supa_base_uid"`
+	Projects    []Project
+}
+
+type Project struct {
+	Model
+	Users []User
+}
