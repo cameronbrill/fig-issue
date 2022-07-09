@@ -1,8 +1,17 @@
 package model
 
 import (
+	"time"
+
 	"github.com/cameronbrill/fig-issue/backend/crypto/aes256"
 )
+
+type Model struct {
+	ID        int       `json:"id"`
+	UID       string    `json:"uid"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
 
 // UID implements and encoder and decoder for encrypting external uids (such as supabase user uid)
 type UID struct {
@@ -22,6 +31,7 @@ func (u *UID) Encode(uid string) error {
 }
 
 type Comment struct {
+	Model
 	Message  string
 	Mentions []string
 }
