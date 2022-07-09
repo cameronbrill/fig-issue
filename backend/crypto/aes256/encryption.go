@@ -20,7 +20,7 @@ type EncryptionStore struct {
 // Encrypt uses an encryption key from the callers environment to encrypt content
 func (e *EncryptionStore) Encrypt(content []byte) (err error) {
 	var encryptionKey []byte = []byte(os.Getenv("AES_ENCRYPTION_KEY"))
-	bPlaintext := _PKCS5Padding(content, aes.BlockSize)
+	bPlaintext := pkcs5Padding(content, aes.BlockSize)
 	block, err := aes.NewCipher(encryptionKey)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func generateRandomBytes(n int) ([]byte, error) {
 	return b, nil
 }
 
-func _PKCS5Padding(cipherText []byte, blockSize int) []byte {
+func pkcs5Padding(cipherText []byte, blockSize int) []byte {
 	padding := blockSize - len(cipherText)%blockSize
 	padText := bytes.Repeat([]byte{byte(padding)}, padding)
 
