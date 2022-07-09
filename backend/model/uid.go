@@ -2,7 +2,7 @@ package model
 
 import "github.com/cameronbrill/fig-issue/backend/crypto/aes256"
 
-// UID implements and encoder and decoder for encrypting external uids (such as supabase user uid)
+// UID implements an encoder and decoder for encrypting external uids (such as supabase user uid)
 type UID struct {
 	encryptionStore aes256.EncryptionStore
 }
