@@ -9,7 +9,7 @@ $(BUILD_TARGETS): %:
 
 deps: 
 	go mod tidy
-	go get
+	go get ./...
 
 clean:
 	rm build/*
