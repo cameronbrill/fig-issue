@@ -9,9 +9,8 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 	log "github.com/sirupsen/logrus"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 
+	"github.com/cameronbrill/fig-issue/backend/dynamodb"
 	"github.com/cameronbrill/fig-issue/backend/listener"
 	"github.com/cameronbrill/fig-issue/backend/model"
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
@@ -54,14 +53,18 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	db, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_DSN")), &gorm.Config{})
+	ddb, err := dynamodb.NewClient()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("creating ddb client: %v", err)
 	}
 
-	err = db.AutoMigrate(model.Tables...)
+	tbl := dynamodb.Table{
+		Name:   os.Getenv("AWS_DYNAMODB_TABLE"),
+		Client: ddb,
+	}
+	err = tbl.Create(ctx, ddb, true)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("creating ddb table: %v", err)
 	}
 
 	figCommentChan := make(chan *figma.FileCommentResponse)
