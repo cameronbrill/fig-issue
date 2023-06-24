@@ -16,6 +16,8 @@ import (
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
 )
 
+// TODO move this from /listener to /figma/listener
+// TODO also move /model/figma to /figma/model
 func Start(ctx context.Context, commentChan chan<- *figma.FileCommentResponse) *http.Server {
 	r := chi.NewRouter()
 
