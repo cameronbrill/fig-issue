@@ -30,3 +30,6 @@ build/**
 
 # test coverage files
 **/*coverage*
+
+# pulsar stuffs
+backend/data/*
