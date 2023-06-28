@@ -38,7 +38,7 @@ services:
       - pulsar
     command: >
       bin/pulsar initialize-cluster-metadata \
-               --cluster cluster-a \
+               --cluster events \
                --zookeeper zookeeper:2181 \
                --configuration-store zookeeper:2181 \
                --web-service-url http://broker:8080 \
@@ -82,7 +82,7 @@ services:
     environment:
       - metadataStoreUrl=zk:zookeeper:2181
       - zookeeperServers=zookeeper:2181
-      - clusterName=cluster-a
+      - clusterName=events
       - managedLedgerDefaultEnsembleSize=1
       - managedLedgerDefaultWriteQuorum=1
       - managedLedgerDefaultAckQuorum=1
@@ -98,6 +98,18 @@ services:
       - "6650:6650"
       - "8080:8080"
     command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
+  dashboard:
+    image: apachepulsar/pulsar-manager
+    container_name: dashboard
+    networks:
+      - pulsar
+    depends_on:
+      - broker
+    ports:
+      - 9527:9527
+      - 7750:7750
+    environment:
+      SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
 
 volumes:
   db:
