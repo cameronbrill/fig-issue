@@ -81,7 +81,8 @@ func main() {
 		Name:   os.Getenv("AWS_DYNAMODB_TABLE"),
 		Client: ddb,
 	}
-	err = tbl.Create(ctx, ddb, true)
+	log.Info("creating ddb table if not exists")
+	err = tbl.CreateIfNotExists(ctx)
 	if err != nil {
 		panic(errors.Wrap(err, "creating ddb table"))
 	}
