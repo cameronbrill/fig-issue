@@ -17,7 +17,9 @@ func main() {
 			Timestamp: "123",
 			WebhookID: "",
 		},
-		Comment:    []figma.CommentFragment{{Text: "!issue\n\nThis is a test issue"}},
+		Comment: []figma.CommentFragment{
+			{Text: "!issue\n\nThis is a test issue"},
+		},
 		CommentID:  "",
 		CreatedAt:  "",
 		FileKey:    "",
@@ -37,9 +39,10 @@ func main() {
 	if err != nil {
 		panic(errors.Wrap(err, "marshalling mock figma response"))
 	}
-	_, err = http.Post("http://localhost:3000/figma", "application/json", bytes.NewBuffer(mockFigmaResB))
+	mockFigmaResBuf := bytes.NewBuffer(mockFigmaResB)
+	const endpoint = "http://localhost:3000/figma"
+	_, err = http.Post(endpoint, "application/json", mockFigmaResBuf)
 	if err != nil {
 		panic(errors.Wrap(err, "making request to webhook"))
 	}
-
 }
