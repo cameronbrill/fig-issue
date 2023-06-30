@@ -11,6 +11,7 @@ import (
 	"github.com/cameronbrill/fig-issue/backend/model"
 	"github.com/cameronbrill/fig-issue/backend/model/figma"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 func transformFigComments(s *figma.FileCommentResponse) (model.Comment, error) {
@@ -47,10 +48,10 @@ func publishGenericComment(c model.Comment) error {
 	producer, err := client.CreateProducer(pulsar.ProducerOptions{
 		Topic: "my-partitioned-topic",
 		MessageRouter: func(msg *pulsar.ProducerMessage, tm pulsar.TopicMetadata) int {
-			fmt.Println("Topic has", tm.NumPartitions(), "partitions. Routing message ", msg, " to partition 2.")
+			log.Debugf("Topic has %d partitions. Routing message %+v to partition 2.", tm.NumPartitions(), msg)
 			// always push msg to partition 2
-			const DefaultPartition = 2
-			return DefaultPartition
+			const defaultPartition = 2
+			return defaultPartition
 		},
 	})
 	if err != nil {

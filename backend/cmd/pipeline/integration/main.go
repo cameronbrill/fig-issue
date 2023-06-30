@@ -41,8 +41,9 @@ func main() {
 	}
 	mockFigmaResBuf := bytes.NewBuffer(mockFigmaResB)
 	const endpoint = "http://localhost:3000/figma"
-	_, err = http.Post(endpoint, "application/json", mockFigmaResBuf)
+	res, err := http.Post(endpoint, "application/json", mockFigmaResBuf)
 	if err != nil {
 		panic(errors.Wrap(err, "making request to webhook"))
 	}
+	defer res.Body.Close()
 }
