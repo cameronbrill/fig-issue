@@ -37,5 +37,9 @@ func main() {
 	if err != nil {
 		panic(errors.Wrap(err, "marshalling mock figma response"))
 	}
-	http.Post("http://localhost:3000/figma", "application/json", bytes.NewBuffer(mockFigmaResB))
+	_, err = http.Post("http://localhost:3000/figma", "application/json", bytes.NewBuffer(mockFigmaResB))
+	if err != nil {
+		panic(errors.Wrap(err, "making request to webhook"))
+	}
+
 }

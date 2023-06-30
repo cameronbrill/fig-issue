@@ -42,7 +42,11 @@ func main() {
 
 	for i := 0; i < 8; i++ {
 		go func() {
-			pipeline.Consumer(ctx, cancel, genericCommentChan, publishGenericComment, errorChannel)
+			// TODO: fix the error handling
+			err := pipeline.Consumer(ctx, cancel, genericCommentChan, publishGenericComment, errorChannel)
+			if err != nil {
+				panic(err)
+			}
 		}()
 	}
 
