@@ -8,6 +8,7 @@ import (
 	"regexp"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/cameronbrill/fig-issue/backend/dynamodb"
@@ -49,11 +50,29 @@ func transformFigComments(s *figma.FileCommentResponse) (model.Comment, error) {
 	return model.Comment{Message: message, Mentions: mentions}, nil
 }
 
+func configureLogging() {
+	lvl, ok := os.LookupEnv("LOG_LEVEL")
+	// LOG_LEVEL not set, let's default to debug
+	if !ok {
+		lvl = "debug"
+	}
+	// parse string, this is built-in feature of logrus
+	ll, err := log.ParseLevel(lvl)
+	if err != nil {
+		ll = log.DebugLevel
+	}
+	// set global log level
+	log.SetLevel(ll)
+}
+
 func main() {
+	configureLogging()
+	log.Info("starting up!")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	ddb, err := dynamodb.NewClient()
+	log.Info("creating aws client")
+	ddb, err := dynamodb.NewClient(ctx)
 	if err != nil {
 		log.Fatalf("creating ddb client: %v", err)
 	}
@@ -64,7 +83,7 @@ func main() {
 	}
 	err = tbl.Create(ctx, ddb, true)
 	if err != nil {
-		log.Fatalf("creating ddb table: %v", err)
+		panic(errors.Wrap(err, "creating ddb table"))
 	}
 
 	figCommentChan := make(chan *figma.FileCommentResponse)
@@ -77,12 +96,11 @@ func main() {
 		}
 	}()
 
-	lowerStage := make(chan model.Comment)
+	commentStage := make(chan model.Comment)
 	errorChannel := make(chan error)
-
 	for i := 0; i < 8; i++ {
 		go func() {
-			pipeline.Step(ctx, figCommentChan, lowerStage, errorChannel, transformFigComments)
+			pipeline.Step(ctx, figCommentChan, commentStage, errorChannel, transformFigComments)
 		}()
 	}
 
@@ -97,8 +115,8 @@ func main() {
 			wrapped: http.DefaultTransport,
 		},
 	}
-	client := graphql.NewClient("https://api.linear.app/graphql", &httpClient)
-	p := publisher.New(&client)
+	linearGqlClient := graphql.NewClient("https://api.linear.app/graphql", &httpClient)
+	p := publisher.New(&linearGqlClient)
 	pub := func(c model.Comment) error {
 		if err := p.Execute(c); err != nil {
 			return err
@@ -106,7 +124,7 @@ func main() {
 		return nil
 	}
 	for i := 0; i < 8; i++ {
-		err := pipeline.Consumer(ctx, cancel, lowerStage, pub, errorChannel)
+		err := pipeline.Consumer(ctx, cancel, commentStage, pub, errorChannel)
 		if err != nil {
 			log.Fatal(err)
 		}
