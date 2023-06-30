@@ -9,16 +9,20 @@ output:
 
 linters:
   enable:
-    - deadcode
+    - depguard
     - errcheck
     - gosimple
     - govet
     - ineffassign
     - staticcheck
-    - structcheck
-    - typecheck
     - unused
-    - varcheck
+    - bodyclose
+    - errname
+    - gochecknoglobals
+    - gochecknoinits
+    - gomnd
+    - loggercheck
+    - revive
 
 # all available settings of specific linters
 linters-settings:
