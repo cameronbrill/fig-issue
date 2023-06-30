@@ -71,5 +71,4 @@ func TestEncryption(t *testing.T) {
 			}
 		})
 	}
-
 }

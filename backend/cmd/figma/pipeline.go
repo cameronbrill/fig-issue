@@ -49,7 +49,8 @@ func publishGenericComment(c model.Comment) error {
 		MessageRouter: func(msg *pulsar.ProducerMessage, tm pulsar.TopicMetadata) int {
 			fmt.Println("Topic has", tm.NumPartitions(), "partitions. Routing message ", msg, " to partition 2.")
 			// always push msg to partition 2
-			return 2
+			const DefaultPartition = 2
+			return DefaultPartition
 		},
 	})
 	if err != nil {

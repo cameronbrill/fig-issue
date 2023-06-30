@@ -85,14 +85,16 @@ func (t *Table) create(ctx context.Context, client *awsDynamodb.Client, waitForT
 	if waitForTable {
 		log.Debug("waiting for ddb table")
 		w := awsDynamodb.NewTableExistsWaiter(client)
+		const defaultWaitTime = 2 * time.Minute
+		const defaultWaitDelay = 5 * time.Second
 		err := w.Wait(ctx,
 			&awsDynamodb.DescribeTableInput{
 				TableName: aws.String(t.Name),
 			},
-			2*time.Minute,
+			defaultWaitTime,
 			func(o *awsDynamodb.TableExistsWaiterOptions) {
-				o.MaxDelay = 5 * time.Second
-				o.MinDelay = 5 * time.Second
+				o.MaxDelay = defaultWaitDelay
+				o.MinDelay = defaultWaitDelay
 			})
 		if err != nil {
 			return errors.Wrap(err, "waiting for table to become active")
