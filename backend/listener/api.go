@@ -53,22 +53,26 @@ func (svc *webhookSvc) figmaHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Error("reading response body")
 		return
 	}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Error("parsing response body")
 		return
 	}
 
 	err = svc.validate.Struct(res)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Invalid request body: %v", err), 400)
+		log.Errorf("validating response body: %v", err)
 		return
 	}
 
 	if res.Passcode != "secretpasscode" {
 		http.Error(w, "Invalid passcode", http.StatusUnauthorized)
+		log.Error("detected invalid passcode in response")
 		return
 	}
 
