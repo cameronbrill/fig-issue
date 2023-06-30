@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	awsDynamodb "github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 type Table struct {
@@ -16,24 +16,63 @@ type Table struct {
 	Name   string
 }
 
-func (t *Table) Create(ctx context.Context, client *awsDynamodb.Client, waitForTable bool) error {
+func (t *Table) CreateIfNotExists(ctx context.Context) error {
+	log.Infof("checking if table exists: %s", t.Name)
+	exists, err := t.exists(ctx)
+	if err != nil {
+		return errors.Wrap(err, "checking if table exists")
+	}
+	if exists {
+		log.Debugf("table %s exists", t.Name)
+		return nil
+	}
+	return errors.Wrap(t.create(ctx, t.Client, true), "creating table")
+}
+
+func (t *Table) exists(ctx context.Context) (bool, error) {
+	log.Debug("listing tables")
+	tables, err := t.Client.ListTables(
+		ctx, &awsDynamodb.ListTablesInput{})
+	if err != nil {
+		return false, errors.Wrap(err, "listing tables")
+	}
+
+	log.Debugf("checking if table %s exists among %+v", t.Name, tables.TableNames)
+	for _, table := range tables.TableNames {
+		if t.Name == table {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func (t *Table) create(ctx context.Context, client *awsDynamodb.Client, waitForTable bool) error {
 	if t.Client == nil {
 		return errors.New("must initialize table with client")
 	}
 	if t.Name == "" {
 		return errors.New("must initialize table with name")
 	}
-	_, err := client.CreateTable(context.TODO(), &dynamodb.CreateTableInput{
+	log.Debug("Creating ddb table")
+	_, err := client.CreateTable(context.TODO(), &awsDynamodb.CreateTableInput{
 		AttributeDefinitions: []types.AttributeDefinition{
 			{
-				AttributeName: aws.String("id"),
+				AttributeName: aws.String("pk"),
+				AttributeType: types.ScalarAttributeTypeS,
+			},
+			{
+				AttributeName: aws.String("sk"),
 				AttributeType: types.ScalarAttributeTypeS,
 			},
 		},
 		KeySchema: []types.KeySchemaElement{
 			{
-				AttributeName: aws.String("id"),
+				AttributeName: aws.String("pk"),
 				KeyType:       types.KeyTypeHash,
+			},
+			{
+				AttributeName: aws.String("sk"),
+				KeyType:       types.KeyTypeRange,
 			},
 		},
 		TableName:   aws.String(t.Name),
@@ -44,19 +83,21 @@ func (t *Table) Create(ctx context.Context, client *awsDynamodb.Client, waitForT
 	}
 
 	if waitForTable {
-		w := dynamodb.NewTableExistsWaiter(client)
+		log.Debug("waiting for ddb table")
+		w := awsDynamodb.NewTableExistsWaiter(client)
 		err := w.Wait(ctx,
-			&dynamodb.DescribeTableInput{
+			&awsDynamodb.DescribeTableInput{
 				TableName: aws.String(t.Name),
 			},
 			2*time.Minute,
-			func(o *dynamodb.TableExistsWaiterOptions) {
+			func(o *awsDynamodb.TableExistsWaiterOptions) {
 				o.MaxDelay = 5 * time.Second
 				o.MinDelay = 5 * time.Second
 			})
 		if err != nil {
 			return errors.Wrap(err, "waiting for table to become active")
 		}
+		log.Debug("finished waiting for ddb table")
 	}
 
 	return nil
