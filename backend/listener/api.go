@@ -70,6 +70,12 @@ func (svc *webhookSvc) figmaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if res.EventType != figma.WebhookV2EventFileComment {
+		http.Error(w, "Invalid event type", http.StatusBadRequest)
+		log.Error("detected invalid event type in response")
+		return
+	}
+
 	if res.Passcode != "secretpasscode" {
 		http.Error(w, "Invalid passcode", http.StatusUnauthorized)
 		log.Error("detected invalid passcode in response")
